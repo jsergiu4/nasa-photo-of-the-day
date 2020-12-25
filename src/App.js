@@ -1,13 +1,40 @@
+
 import React from "react";
 import "./App.css";
 
+function getCurrentDate(){
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2 , '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+
+  return yyyy + '-' + mm + '-' + dd + '-'
+}
+
+
 function App() {
+  const [state , setState] = React.useState({});
+  const [query, setQuery] = React.useState(() => getCurrentDate());
+
+  React.useEffect(() =>{
+    const fetchData = async () => {
+    const res = await fetch(
+      `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=${query}`);
+    const data = await res.json();
+
+    setState(data);
+    }
+    fetchData()
+  } , [query]);
+
+  const onChange = (e) => {
+    setQuery(e.target.value);
+  }
+
   return (
     <div className="App">
-      <p>
-        Read through the instructions in the README.md file to build your NASA
-        app! Have fun <span role="img" aria-label='go!'>🚀</span>!
-      </p>
+      <img src={state.url} alt={state.title} />
+      <input type="date" value={query} onChange={onChange} />
     </div>
   );
 }
